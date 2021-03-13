@@ -1,7 +1,8 @@
 import React from 'react';
 import { Col ,Container ,Row ,Card} from 'react-bootstrap';
 import { fetchPlayersDataRequest } from './api';
-import {searchPlayersDataRequest  } from './api';
+import {searchPlayersDataRequestByTname  } from './api';
+import {searchPlayersDataRequestByPfName} from './api';
 
 
 
@@ -11,7 +12,8 @@ class List extends React.Component{
     state={
      players_details:[],
      match:[],
-     tname:""
+     tname:"",
+     pfname:""
     }
      
  componentDidMount() {
@@ -21,7 +23,6 @@ class List extends React.Component{
     getPlayersDetails= async ()=>{
         try{
             let playersData= await fetchPlayersDataRequest()
-            console.log(playersData)
             this.setState({
                 players_details:playersData.playerList
             })          
@@ -32,22 +33,32 @@ class List extends React.Component{
     }
     
     handleChange=(event) =>{
-        console.log(event)
         this.setState({
           tname: event.target.value
         })
       };
 
-      getWeatherData = async () => {
+      getDetialsOfPlayersByTname = async () => {
        try{
-        let weather_data = await searchPlayersDataRequest(this.state.tname);
+        let data = await searchPlayersDataRequestByTname(this.state.tname);
       this.setState({
-       players_details:weather_data
+       players_details:data.playerList
       })
         } catch (error) {
           console.error(error.response);
         }
       };
+
+      getDetialsOfPlayersByPfname = async () => {
+        try{
+         let data = await searchPlayersDataRequestByPfName(this.state.pfname);
+       this.setState({
+        players_details:data.playerList
+       })
+         } catch (error) {
+           console.error(error.response);
+         }
+       };
 
     render(){
         return(
@@ -60,7 +71,7 @@ class List extends React.Component{
      onChange={this.handleChange} 
      className="dropdown"
      placeholder="Search by tname"/>
-    <span onClick={this.getWeatherData} ><button className="button">Search</button></span>
+    <span onClick={this.getDetialsOfPlayersByTname}><button className="button">Search</button></span>
     
     <input type="text"
      value={this.state.tname} 
@@ -68,13 +79,13 @@ class List extends React.Component{
      className="dropdowns"
      placeholder="Search by pfname"
      />
-    <span onClick={this.getWeatherData} ><button className="button float right">Search</button></span>
+    <span onClick={this.getDetialsOfPlayersByPfname}><button className="button float right">Search</button></span>
     </div>
     <Row>
-    {this.state.players_details.map((player,index)=>{
+    {this.state.players_details.map((player)=>{
     console.log(player.Id)
     return(
-        <Col sm={4} key={index} >
+    <Col sm={4}  >
     <Card className="card-size">
     <img  variant="top" src={`./player-images/${player.Id}.jpg`} alt="name" className="image-size"/>
     <Card.Body>
@@ -88,8 +99,7 @@ class List extends React.Component{
     </Card.Body>
      </Card>
      </Col>
-               
-     )
+    )
       })}
     </Row>
     </Container>
